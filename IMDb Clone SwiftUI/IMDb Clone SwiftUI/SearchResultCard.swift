@@ -8,13 +8,28 @@
 import SwiftUI
 
 struct SearchResultCard: View {
+    
+    var dataModel: ContentSearchModel
+    
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
-    }
-}
-
-struct SearchResultCard_Previews: PreviewProvider {
-    static var previews: some View {
-        SearchResultCard()
+        VStack{
+            AsyncImage(
+                url: URL(string: dataModel.Poster ?? ""),
+                content: { image in
+                    image
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                },
+                placeholder: {
+                    ProgressView()
+                }
+            )
+            Text("\(dataModel.Title ?? "")")
+            Text("\(dataModel.Year ?? "")")
+            Text("\(dataModel.`Type` ?? "")")
+        }
+        .onAppear {
+            print("Image URL: \(dataModel.Poster ?? "Not Present")")
+        }
     }
 }

@@ -8,9 +8,64 @@
 import SwiftUI
 
 struct ContentView: View {
+    
+    @StateObject var paginationMovieSearch = PaginationSearch()
+    
+    @State var searchString = ""
+    
+    let columns = [
+            GridItem(.flexible()),
+            GridItem(.flexible())
+        ]
+    
     var body: some View {
-        Text("Hello, world!")
-            .padding()
+        NavigationView{
+            VStack{
+                HStack{
+                    TextField("Search For a Movie!", text: self.$searchString)
+                        .onSubmit {
+                            self.paginationMovieSearch.searchResults = SearchResultModel()
+                            self.paginationMovieSearch.isEverythingFetched = false
+                            self.paginationMovieSearch.pageNumber = 1
+                            self.paginationMovieSearch.getSearchResults(searchString: "\(self.searchString)")
+                        }
+                        .padding(.horizontal)
+                }
+                GeometryReader { proxy in
+                    ScrollView(.vertical, showsIndicators: false){
+                        if self.paginationMovieSearch.shouldDisplay{
+                            LazyVGrid(columns: self.columns, spacing: 20){
+                                ForEach(paginationMovieSearch.searchResults.Search ?? [], id: \.self) { item in
+                                    SearchResultCard(dataModel: item)
+                                        .frame(width: proxy.size.width * 0.4, height: 300)
+                                        .padding(10)
+                                        .border(.red, width: 4)
+                                }
+                                if !self.paginationMovieSearch.isEverythingFetched {
+                                    ProgressView()
+                                        .onAppear {
+                                            self.paginationMovieSearch.getSearchResults(searchString: "\(self.searchString)")
+                                        }
+                                }
+                            }
+                            .padding(.top)
+                        }
+                        else if self.paginationMovieSearch.isSearching {
+                            ProgressView()
+                        }
+                        else {
+                            Text("Enter your query into the search box!")
+                        }
+                    }
+                }
+                .padding(.horizontal)
+                .navigationTitle("Movie Database")
+                .navigationBarTitleDisplayMode(.large)
+            }
+        }
+//        Text("Hello, world!")
+//            .padding()
+            
     }
 }
 
