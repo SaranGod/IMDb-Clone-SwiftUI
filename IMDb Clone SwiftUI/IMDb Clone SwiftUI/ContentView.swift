@@ -21,26 +21,26 @@ struct ContentView: View {
     var body: some View {
         NavigationView{
             VStack{
-                HStack{
-                    TextField("Search For a Movie!", text: self.$searchString)
-                        .onSubmit {
-                            self.paginationMovieSearch.searchResults = SearchResultModel()
-                            self.paginationMovieSearch.isEverythingFetched = false
-                            self.paginationMovieSearch.pageNumber = 1
-                            self.paginationMovieSearch.getSearchResults(searchString: "\(self.searchString)")
-                        }
-                        .padding(.horizontal)
-                }
                 GeometryReader { proxy in
                     ScrollView(.vertical, showsIndicators: false){
+						TextField("Search", text: self.$searchString)
+							.onSubmit {
+								self.paginationMovieSearch.searchResults = SearchResultModel()
+								self.paginationMovieSearch.isEverythingFetched = false
+								self.paginationMovieSearch.pageNumber = 1
+								self.paginationMovieSearch.getSearchResults(searchString: "\(self.searchString)")
+							}
                         if self.paginationMovieSearch.shouldDisplay{
                             LazyVGrid(columns: self.columns, spacing: 20){
-                                ForEach(paginationMovieSearch.searchResults.Search ?? [], id: \.self) { item in
-                                    SearchResultCard(dataModel: item)
-                                        .frame(width: proxy.size.width * 0.4, height: 300)
-                                        .padding(10)
-                                        .border(.red, width: 4)
-                                }
+								ForEach(paginationMovieSearch.searchResults.Search ?? [], id: \.self) { item in
+									SearchResultCard(dataModel: item)
+										.frame(width: proxy.size.width * 0.4, height: 300)
+										.padding(10)
+										.overlay(
+											RoundedRectangle(cornerRadius: 10)
+												.stroke(lineWidth: 2)
+										)
+								}
                                 if !self.paginationMovieSearch.isEverythingFetched {
                                     ProgressView()
                                         .onAppear {
@@ -59,7 +59,7 @@ struct ContentView: View {
                     }
                 }
                 .padding(.horizontal)
-                .navigationTitle("Movie Database")
+                .navigationTitle("iMDb")
                 .navigationBarTitleDisplayMode(.large)
             }
         }

@@ -45,5 +45,5 @@ struct ContentDetailsModel: Codable {
     var Production: String?
     var Website: String?
     var totalSeasons: String?
-    var Response: String
+    var Response: String?
 }

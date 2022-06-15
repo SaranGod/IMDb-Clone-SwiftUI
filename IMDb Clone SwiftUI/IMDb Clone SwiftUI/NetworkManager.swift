@@ -17,6 +17,8 @@ enum NetworkError: Error {
 class NetworkManager {
     
     static let shared = NetworkManager()
+	
+	let apiKey = "ddd0858d"
     
     private init() {
         
@@ -27,7 +29,7 @@ class NetworkManager {
     
     func getData<T: Decodable>(endpoint: String, type: T.Type) -> Future<T, Error> {
         return Future<T, Error> { [weak self] promise in
-            guard let self = self, let url = URL(string: endpoint) else {
+            guard let self = self, let url = URL(string: "\(endpoint)&apikey=\(self.apiKey)") else {
                 return promise(.failure(NetworkError.invalidURL))
             }
 //            print("URL is \(url.absoluteString)")
@@ -69,10 +71,6 @@ class PaginationSearch: ObservableObject {
     
     var pageNumber = 1
     
-    let apiKey = "ddd0858d"
-    
-    private var publisherTask: AnyCancellable?
-    
     private var cancellables = Set<AnyCancellable>()
     
     func getSearchResults(searchString: String) {
@@ -91,7 +89,7 @@ class PaginationSearch: ObservableObject {
         //                print("Error \(err)")
         //                return Just(self.searchResults)
         //            }
-        NetworkManager.shared.getData(endpoint: "https://www.omdbapi.com/?s=\(cleanedString)&page=\(self.pageNumber)&apikey=\(self.apiKey)", type: SearchResultModel.self)
+        NetworkManager.shared.getData(endpoint: "https://www.omdbapi.com/?s=\(cleanedString)&page=\(self.pageNumber)", type: SearchResultModel.self)
             .sink { completion in
                 switch completion {
                 case .failure(let err):
